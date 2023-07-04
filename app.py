@@ -9,8 +9,10 @@ from torch.utils.data import DataLoader
 import torchvision.transforms as transforms
 from PIL import Image
 from pathlib import Path
+import base64
+from io import BytesIO
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder="templates", static_folder="staticFiles")
 
 # PyTorch Neural Network
 class QuickDrawModelV0(nn.Module):
@@ -101,7 +103,7 @@ def make_predictions(model: torch.nn.Module, data, device: torch.device = device
     # Stack the pred_probs to turn list into a tensor
     return torch.stack(pred_probs)
 
-@app.route('/', methods=['GET'])
+@app.route('/')
 def hello_word():
     return render_template('index.html')
 
@@ -120,7 +122,6 @@ def predict():
     os.remove(image_path)
 
     return render_template("index.html", prediction=allClasses[pred_classes])
-
 
 if __name__ == '__main__':
     app.run(port=3000, debug=True)

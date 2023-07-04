@@ -1,13 +1,46 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <title>Drawing App JavaScript | CodingNepal</title>
+        <link rel="stylesheet" href="/staticFiles/style.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="/staticFiles/script.js" defer></script>
+    </head>
     <body>
-        <form class="p-3 text-center" action='/', method="post" enctype="multipart/form-data">
+        <div class="container">
+            <section class="tools-board">
+              <div class="row">
+                <label class="title">Shapes</label>
+                <ul class="options">
+                  <li class="option" id="brush">
+                    <img href="/images/brush.svg" alt="">
+                    <span>Brush</span>
+                  </li>
+                  <li class="option">
+                    <input type="range" id="size-slider" min="1" max="30" value="5">
+                  </li>
+                </ul>
+              </div>
+              <div class="row buttons">
+                <button class="clear-canvas">Clear Canvas</button>
+                <button class="save-img">Submit</button>
+              </div>
+            </section>
+            <section class="drawing-board">
+              <canvas id="canvas"></canvas>
+            </section>
+        </div>
+
+        <!-- <form class="p-3 text-center" action='/', method="post" enctype="multipart/form-data">
             <input class="form-control" type="file" name="imagefile">
             <input class="btn btn-primary mt-3" type="submit" value="Predict input value">
         </form>
 
         {% if prediction %}
             <p class="text-center"> Image is a {{prediction}}</p>
-        {% endif %}
+        {% endif %} -->
     </body>
 </html>
+
+

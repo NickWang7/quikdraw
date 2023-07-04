@@ -1,0 +1,90 @@
+@import url('https://fonts.googleapis.com/css2?family=Ysabeau+SC:wght@200&display=swap');
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Ysabeau SC', sans-serif;
+}
+body{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: #4A98F7;
+}
+.container{
+    display: flex;
+    width: 100%;
+    gap: 10px;
+    padding: 10px;
+    max-width: 1050px;
+    /* height: 500px; */
+}
+section{
+    background: #fff;
+    border-radius: 7px;
+}
+.tools-board{
+    width: 210px;
+    padding: 15px 22px 0;
+}
+.tools-board .row{
+    margin-bottom: 20px;
+}
+.row .options{
+    list-style: none;
+    margin: 10 0 0 5px;
+}
+.row .options .option{
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+.option:is(:hover, .active) img{
+    filter: invert(17%) sepia(90%) saturate(3000%) brightness(100%) contrast(100%) hue-rotate(900deg)
+}
+.option :where(span, label){
+    color: #5a6168;
+    cursor: pointer;
+    padding-left: 10px;
+}
+.option:is(:hover, .actice) :where(span, label){
+    color: #4a98f7
+}
+.option #fill-color{
+    cursor: pointer;
+    height: 14px;
+    width: 14px;
+}
+.buttons button{
+    width: 100%;
+    color: #fff;
+    border: none;
+    outline: none;
+    padding: 11px 0;
+    font-size: 0.9rem;
+    margin-bottom: 13px;
+    background: none;
+    border-radius: 5px;
+}
+.buttons .clear-canvas{
+    color: #6C757D;
+    border: 1px solid #6C757D;
+    transition: all 0.3s ease;
+}
+.clear-canvas:hover{
+    color: #fff;
+    background: #6C757D;
+}
+.buttons .save-img{
+    background: #4A98F7;
+    border: 1px solid #4A98F7;
+}
+.drawing-board{
+    flex: 1;
+}
+.drawing-board canvas{
+    width: 100%;
+    height: 500px;
+}
