@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 import torch
 import glob
 import os
+import random
 from torch import nn
 from torchvision import models
 from torchvision import datasets
@@ -11,7 +12,6 @@ from PIL import Image
 from pathlib import Path
 import base64
 import io
-import cv2
 
 
 
@@ -107,7 +107,7 @@ def make_predictions(model: torch.nn.Module, data, device: torch.device = device
 
 @app.route('/')
 def hello_word():
-    return render_template('index.html')
+    return render_template('index.html', data=allClasses)
 
 @app.route('/submit', methods=['GET', 'POST'])
 def predict():

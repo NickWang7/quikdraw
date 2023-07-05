@@ -8,38 +8,50 @@
         <script src="/staticFiles/script.js" defer></script>
     </head>
     <body>
+        <div class="timer" id="yay">8</div>
+        <!-- <script>
+          var jsondata = '{{data | tojson | safe}}'
+        </script> -->
         <div class="container">
             <section class="tools-board">
               <div class="row">
-                <label class="title">Shapes</label>
+                <label class="title"></label>
                 <ul class="options">
+                  <button data-modal-target="#modal"class="directions">How To Play</button>
+                  <div class="modal" id="modal">
+                    <div class="modal-header">
+                      <div class="title">How This Works:</div>
+                      <button data-close-button class="close-button">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        1. Once the 'Start' button, at the bottom left of the page, is clicked, you will be shown a prompt draw.<br>
+                        2. A timer will appear and you will have 8 seconds to draw the prompt to the best of your abilities. <br>
+                        3. A timer will appear in the top right corner of the canvas. The 'Start' button will also change to a 'Submit' button.<br>
+                        4. Once you finish drawing the prompt, click the 'Submit' button. You can also adjust brush thickness with the slidy-bar. <br>
+                        <strong> 5. You have no way to erase the board. Don't mess it up.</strong><br>
+                        6. Your goal is to have the computer correctly guess your drawing. Good luck and don't be a terrible artist. <br><br><br>
+                        Code for this game, if you want to recreate it, can be found on my GitHub at: *link*
+                    </div>
+                  </div>
+                  <div id="overlay"></div>
                   <li class="option" id="brush">
                     <img href="/images/brush.svg" alt="">
-                    <span>Brush</span>
+                    <span>Brush Size</span>
                   </li>
-                  <li class="option">
+                  <li class="option2">
                     <input type="range" id="size-slider" min="1" max="30" value="5">
                   </li>
                 </ul>
               </div>
               <div class="row buttons">
                 <button class="clear-canvas">Clear Canvas</button>
-                <button class="save-img">Submit</button>
+                <button class="save-img" id="save-img">Start</button>
               </div>
             </section>
             <section class="drawing-board">
               <canvas id="canvas"></canvas>
             </section>
         </div>
-<!-- 
-         <form class="p-3 text-center" action='/', method="post" enctype="multipart/form-data">
-            <input class="form-control" type="file" name="imagefile">
-            <input class="btn btn-primary mt-3" type="submit" value="Predict input value">
-        </form> -->
-
-        <!-- {% if prediction %}
-            <p class="text-center"> Image is a {{prediction}}</p>
-        {% endif %}  -->
     </body>
 </html>
 
