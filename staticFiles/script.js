@@ -1,4 +1,4 @@
-const canvas = document.querySelector("canvas"),
+const canvas = document.getElementById("canvas"),
 sizeSlider = document.querySelector("#size-slider"),
 clearCanvas = document.querySelector(".clear-canvas")
 saveImg = document.querySelector(".save-img"),
@@ -11,12 +11,13 @@ brushWidth = 5;
 const setCanvasBackground = () => {
     ctx.fillStyle = "#fff";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = selectedColor;
+    ctx.fillStyle = "#fff";
 }
 
 window.addEventListener("load", () => {
     canvas.width = canvas.offsetWidth;
     canvas.height = canvas.offsetHeight;
+    setCanvasBackground();
 })
 
 const startDraw = () => {
@@ -41,14 +42,23 @@ function convertCanvasToImage() {
 
 clearCanvas.addEventListener("click", () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    setCanvasBackground();
 });
 
 saveImg.addEventListener("click", () => {
-    // const link = document.createElement("a");
-    // link.download = `${Date.now()}.jpg`;
-    // link.href = canvas.toDataURL();
-    // link.click();
-    
+    const upload = (file) => {
+        fetch('/submit', {
+            method: 'POST',
+            body: file
+        })
+    }
+
+    canvas.toBlob(function(blob) {
+        var data = new FormData();
+        data.append('file', blob);
+        upload(data);
+      });
+    setCanvasBackground();
 });
 
 sizeSlider.addEventListener("change", () => brushWidth = sizeSlider.value);

@@ -10,7 +10,10 @@ import torchvision.transforms as transforms
 from PIL import Image
 from pathlib import Path
 import base64
-from io import BytesIO
+import io
+import cv2
+
+
 
 app = Flask(__name__, template_folder="templates", static_folder="staticFiles")
 
@@ -78,7 +81,6 @@ allClasses = datasets.ImageFolder(root=Path("C:\\Users\\wangn6\\Pictures\\quikdr
 # Transform the image
 data_transform = transforms.Compose([
     transforms.Resize(size=(64, 64)),
-    transforms.RandomHorizontalFlip(p=0.5),
     transforms.Grayscale(1),
     transforms.ToTensor()
 ])
@@ -107,21 +109,38 @@ def make_predictions(model: torch.nn.Module, data, device: torch.device = device
 def hello_word():
     return render_template('index.html')
 
-@app.route('/', methods=['POST'])
+@app.route('/submit', methods=['GET', 'POST'])
 def predict():
-    imagefile=request.files['imagefile']
-    image_path= "./images/" + imagefile.filename
-    imagefile.save(image_path) 
-    image = Image.open(image_path)
-    print("HERE IS IMAGE FILE: \n", image, "\n")
-    train_photo = data_transform(image)
-    pred_probs = make_predictions(model=model_0, data=train_photo)
-    pred_classes = pred_probs.argmax(dim=1)
+    if request.method == 'GET':
+       return render_template("index.html")
+    elif request.method == 'POST':
+        # Save the image
+        image = request.files['file']
+        image_path= "./images/" + image.filename
+        image.save(image_path) 
 
-    # Delete the file, we dont want it
-    os.remove(image_path)
+        # Load the image
+        byteImgIO = io.BytesIO()
+        byteImg = Image.open(image_path)
+        byteImg.save(byteImgIO, "PNG")
+        byteImgIO.seek(0)
+        byteImg = byteImgIO.read()
 
-    return render_template("index.html", prediction=allClasses[pred_classes])
+        dataBytesIO = io.BytesIO(byteImg)
+        finalPass = Image.open(dataBytesIO)
+
+        # Test the photo
+        train_photo = data_transform(finalPass)
+        pred_probs = make_predictions(model=model_0, data=train_photo)
+        print(pred_probs)
+        pred_classes = pred_probs.argmax(dim=1)
+
+        print(allClasses[pred_classes])
+
+        # Delete the file, we dont want it
+        os.remove(image_path)
+
+        return render_template("index.html", prediction=allClasses[pred_classes])
 
 if __name__ == '__main__':
     app.run(port=3000, debug=True)
