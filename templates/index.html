@@ -7,11 +7,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script src="/staticFiles/script.js" defer></script>
     </head>
-    <body>
+    <body> 
         <div class="timer" id="yay">8</div>
-        <!-- <script>
-          var jsondata = '{{data | tojson | safe}}'
-        </script> -->
+        <button class="topic" id="topic">Test</button>
         <div class="container">
             <section class="tools-board">
               <div class="row">
@@ -45,14 +43,20 @@
               </div>
               <div class="row buttons">
                 <button class="clear-canvas">Clear Canvas</button>
-                <button class="save-img" id="save-img">Start</button>
+                <button class="save-img" id="save-img" >Start</button>
               </div>
             </section>
             <section class="drawing-board">
               <canvas id="canvas"></canvas>
             </section>
         </div>
+
+        <div id="predictionPopup" class="modal2">
+          <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>I think you drew a/an: </h3>
+            <p id="predictionText"></p>
+          </div>
+        </div>     
     </body>
 </html>
-
-

@@ -2,7 +2,8 @@ from flask import Flask, render_template, request
 import torch
 import glob
 import os
-import random
+import json
+from flask import jsonify
 from torch import nn
 from torchvision import models
 from torchvision import datasets
@@ -107,7 +108,7 @@ def make_predictions(model: torch.nn.Module, data, device: torch.device = device
 
 @app.route('/')
 def hello_word():
-    return render_template('index.html', data=allClasses)
+    return render_template('index.html')
 
 @app.route('/submit', methods=['GET', 'POST'])
 def predict():
@@ -140,7 +141,9 @@ def predict():
         # Delete the file, we dont want it
         os.remove(image_path)
 
-        return render_template("index.html", prediction=allClasses[pred_classes])
+        # return render_template("index.html", prediction=allClasses[pred_classes])
+        prediction = allClasses[pred_classes]
+        return json.dumps({"prediction": prediction})
 
 if __name__ == '__main__':
     app.run(port=3000, debug=True)
