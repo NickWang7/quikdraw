@@ -1,17 +1,14 @@
 from flask import Flask, render_template, request
 import torch
-import glob
 import os
 import json
-from flask import jsonify
+import urllib.request
 from torch import nn
-from torchvision import models
 from torchvision import datasets
-from torch.utils.data import DataLoader
 import torchvision.transforms as transforms
 from PIL import Image
 from pathlib import Path
-import base64
+import requests
 import io
 
 
@@ -68,15 +65,28 @@ class QuickDrawModelV0(nn.Module):
   def forward(self, x):
     return self.classifier(self.conv_block_2(self.conv_block_1(x)))
 
+
+
+
+# Load in all the classes and its respective dictionary
+allClasses = []
+classDict = {}
+repository = "chickenwang6/quikdraw"
+folder_path = "data/test"
+url = f"https://api.github.com/repos/{repository}/contents/{folder_path}"
+response = requests.get(url)
+contents = response.json()
+index = 0
+for item in contents:
+    allClasses.append(item['name'])
+    classDict[item['name']] = index
+    index += 1
 # Load in the model baby
-newPath = Path("C:\\Users\\wangn6\\TkinterPractice\\8_quikdraw_workflow_model_0.pth")
-numClasses = len(datasets.ImageFolder(root=Path("C:\\Users\\wangn6\\Pictures\\quikdraw\\test")).classes)
-classDict = datasets.ImageFolder(root=Path("C:\\Users\\wangn6\\Pictures\\quikdraw\\test")).class_to_idx
-model_0 = QuickDrawModelV0(input_shape=1, hidden_units=10, output_shape=numClasses)
-model_0.load_state_dict(torch.load(f=newPath))
+model_url = 'https://github.com/chickenwang6/quikdraw/raw/main/data/8_quikdraw_workflow_model_0.pth'
+urllib.request.urlretrieve(model_url, 'model.pth')
+model_0 = QuickDrawModelV0(input_shape=1, hidden_units=10, output_shape=len(allClasses))
+model_0.load_state_dict(torch.load('model.pth'))
 model_0.eval()
-device = "cuda" if torch.cuda.is_available() else "cpu"
-allClasses = datasets.ImageFolder(root=Path("C:\\Users\\wangn6\\Pictures\\quikdraw\\test")).classes
 
 
 # Transform the image
@@ -87,12 +97,12 @@ data_transform = transforms.Compose([
 ])
 
 # Function to make prediction
-def make_predictions(model: torch.nn.Module, data, device: torch.device = device):
+def make_predictions(model: torch.nn.Module, data, device: torch.device = "cpu"):
     pred_probs = []
     model.eval()
     with torch.inference_mode():
         # Prepare sample
-        sample = torch.unsqueeze(data, dim=0).to(device) # Add an extra dimension and send sample to device
+        sample = torch.unsqueeze(data, dim=0).to("cpu") # Add an extra dimension and send sample to device
 
         # Forward pass (model outputs raw logit)
         pred_logit = model(sample)
@@ -142,7 +152,7 @@ def predict():
         os.remove(image_path)
 
         # return render_template("index.html", prediction=allClasses[pred_classes])
-        prediction = allClasses[pred_classes]
+        prediction = (allClasses[pred_classes])[0:-1]
         return json.dumps({"prediction": prediction})
 
 if __name__ == '__main__':
