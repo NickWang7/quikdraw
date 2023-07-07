@@ -1,19 +1,19 @@
 from flask import Flask, render_template, request
+from flask_cors import CORS
 import torch
 import os
 import json
 import urllib.request
 from torch import nn
-from torchvision import datasets
 import torchvision.transforms as transforms
 from PIL import Image
-from pathlib import Path
 import requests
 import io
 
 
 
 app = Flask(__name__, template_folder="templates", static_folder="staticFiles")
+CORS(app)
 
 # PyTorch Neural Network
 class QuickDrawModelV0(nn.Module):
@@ -127,12 +127,12 @@ def predict():
     elif request.method == 'POST':
         # Save the image
         image = request.files['file']
-        image_path= "./images/" + image.filename
-        image.save(image_path) 
+        # image_path= "./images/" + image.filename
+        # image.save(image_path) 
 
         # Load the image
         byteImgIO = io.BytesIO()
-        byteImg = Image.open(image_path)
+        byteImg = Image.open(image)
         byteImg.save(byteImgIO, "PNG")
         byteImgIO.seek(0)
         byteImg = byteImgIO.read()
@@ -149,11 +149,12 @@ def predict():
         print(allClasses[pred_classes])
 
         # Delete the file, we dont want it
-        os.remove(image_path)
+        # os.remove(image_path)
 
         # return render_template("index.html", prediction=allClasses[pred_classes])
         prediction = (allClasses[pred_classes])[0:-1]
         return json.dumps({"prediction": prediction})
 
 if __name__ == '__main__':
-    app.run(port=3000, debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
