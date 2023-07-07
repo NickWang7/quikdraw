@@ -9,7 +9,8 @@ import torchvision.transforms as transforms
 from PIL import Image
 import requests
 import io
-
+import string 
+import random
 
 
 app = Flask(__name__, template_folder="templates", static_folder="staticFiles")
@@ -127,8 +128,6 @@ def predict():
     elif request.method == 'POST':
         # Save the image
         image = request.files['file']
-        # image_path= "./images/" + image.filename
-        # image.save(image_path) 
 
         # Load the image
         byteImgIO = io.BytesIO()
@@ -139,6 +138,12 @@ def predict():
 
         dataBytesIO = io.BytesIO(byteImg)
         finalPass = Image.open(dataBytesIO)
+        
+        # Generate random string to save
+        res = ''.join(random.choices(string.ascii_uppercase +
+                             string.digits, k=10))
+        image_path = os.path.join('images', res + '.png')
+        finalPass.save(image_path)
 
         # Test the photo
         train_photo = data_transform(finalPass)
