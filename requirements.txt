@@ -5,3 +5,4 @@ Pillow
 requests
 gunicorn
 torchvision
+boto3

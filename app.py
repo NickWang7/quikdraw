@@ -11,7 +11,7 @@ import requests
 import io
 import string 
 import random
-
+import boto3
 
 app = Flask(__name__, template_folder="templates", static_folder="staticFiles")
 CORS(app)
@@ -97,6 +97,34 @@ data_transform = transforms.Compose([
     transforms.ToTensor()
 ])
 
+# Model test
+def model_test(canvasDrawingToSave):
+   # Generate random string to save
+        res = ''.join(random.choices(string.ascii_uppercase +
+                             string.digits, k=10))
+        s3 = boto3.client(
+            's3',
+            aws_access_key_id='AKIAZAOW2BXIRPXAI46Z',
+            aws_secret_access_key='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',
+            region_name='us-east-2'
+        )
+        
+        # Set content type and metadata
+        content_type = 'image/png'
+        metadata = {
+            'x-amz-meta-drawing': 'true'
+        }
+
+        s3.upload_fileobj(
+           io.BytesIO(canvasDrawingToSave),
+           'quikdrawstorage', 
+            res, 
+            ExtraArgs={
+                'ContentType': content_type,
+                'Metadata': metadata
+            }
+        )
+
 # Function to make prediction
 def make_predictions(model: torch.nn.Module, data, device: torch.device = "cpu"):
     pred_probs = []
@@ -128,6 +156,7 @@ def predict():
     elif request.method == 'POST':
         # Save the image
         image = request.files['file']
+        blob = image.stream.read()
 
         # Load the image
         byteImgIO = io.BytesIO()
@@ -135,15 +164,11 @@ def predict():
         byteImg.save(byteImgIO, "PNG")
         byteImgIO.seek(0)
         byteImg = byteImgIO.read()
-
         dataBytesIO = io.BytesIO(byteImg)
         finalPass = Image.open(dataBytesIO)
         
-        # Generate random string to save
-        res = ''.join(random.choices(string.ascii_uppercase +
-                             string.digits, k=10))
-        image_path = os.path.join('images', res + '.png')
-        finalPass.save(image_path)
+        # Save the photo for future model testing
+        model_test(blob)
 
         # Test the photo
         train_photo = data_transform(finalPass)
