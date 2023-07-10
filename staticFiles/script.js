@@ -4,7 +4,8 @@ const closeModalButtons = document.querySelectorAll('[data-close-button]');
 const overlay = document.getElementById('overlay');
 const test = document.getElementById("save-img");
 const topic2222 = document.getElementById("topic");
-const topics = ['airplane', 'monkey', 'skull', 'brain', 'door', 'mug', 'table', 'stop-sign', 'line', 'butterfly'];
+const topics = ['airplane', 'monkey', 'skull'];
+// , 'brain', 'door', 'mug', 'table', 'stop-sign', 'line', 'butterfly'];
 sizeSlider = document.querySelector("#size-slider"),
 clearCanvas = document.querySelector(".clear-canvas"),
 saveImg = document.querySelector(".save-img"),

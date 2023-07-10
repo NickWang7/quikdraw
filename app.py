@@ -154,9 +154,6 @@ def predict():
         byteImg = byteImgIO.read()
         dataBytesIO = io.BytesIO(byteImg)
         finalPass = Image.open(dataBytesIO)
-        res = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
-        image_path= "./images/" + res + ".png"
-        image.save(image_path) 
         
         # Save the photo for future model testing
         model_test(finalPass)
@@ -171,7 +168,7 @@ def predict():
         print(allClasses[pred_classes])
 
         # Delete the file, we dont want it
-        os.remove(image_path)
+        # os.remove(image_path)
 
         # return render_template("index.html", prediction=allClasses[pred_classes])
         prediction = (allClasses[pred_classes])[0:-1]
