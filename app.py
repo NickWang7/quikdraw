@@ -99,7 +99,10 @@ data_transform = transforms.Compose([
 ])
 
 # Model test
-def model_test(canvasDrawingToSave, path):
+def model_test(canvasDrawingToSave):
+    # Generate random string to save
+    res = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+        
     byte_img = BytesIO()
     canvasDrawingToSave.save(byte_img, format='PNG')
     byte_img.seek(0)
@@ -107,7 +110,7 @@ def model_test(canvasDrawingToSave, path):
     # Upload the image to AWS S3 bucket
     s3 = boto3.client('s3')
     bucket_name = 'quikdrawstorage'
-    object_key = path
+    object_key = f'images/finalPass_{res}.png'  # Modify the object key as desired
 
     s3.upload_fileobj(byte_img, bucket_name, object_key)
 
@@ -156,7 +159,7 @@ def predict():
         image.save(image_path) 
         
         # Save the photo for future model testing
-        model_test(finalPass, image_path)
+        model_test(finalPass)
         # exit(1)
 
         # Test the photo
