@@ -9,6 +9,7 @@ import torchvision.transforms as transforms
 from PIL import Image
 import requests
 import io
+from io import BytesIO
 import string 
 import random
 import boto3
@@ -98,32 +99,17 @@ data_transform = transforms.Compose([
 ])
 
 # Model test
-def model_test(canvasDrawingToSave):
-   # Generate random string to save
-        res = ''.join(random.choices(string.ascii_uppercase +
-                             string.digits, k=10))
-        s3 = boto3.client(
-            's3',
-            aws_access_key_id='AKIAZAOW2BXIRPXAI46Z',
-            aws_secret_access_key='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',
-            region_name='us-east-2'
-        )
-        
-        # Set content type and metadata
-        content_type = 'image/png'
-        metadata = {
-            'x-amz-meta-drawing': 'true'
-        }
+def model_test(canvasDrawingToSave, path):
+    byte_img = BytesIO()
+    canvasDrawingToSave.save(byte_img, format='PNG')
+    byte_img.seek(0)
 
-        s3.upload_fileobj(
-           io.BytesIO(canvasDrawingToSave),
-           'quikdrawstorage', 
-            res, 
-            ExtraArgs={
-                'ContentType': content_type,
-                'Metadata': metadata
-            }
-        )
+    # Upload the image to AWS S3 bucket
+    s3 = boto3.client('s3')
+    bucket_name = 'quikdrawstorage'
+    object_key = path
+
+    s3.upload_fileobj(byte_img, bucket_name, object_key)
 
 # Function to make prediction
 def make_predictions(model: torch.nn.Module, data, device: torch.device = "cpu"):
@@ -156,19 +142,22 @@ def predict():
     elif request.method == 'POST':
         # Save the image
         image = request.files['file']
-        blob = image.stream.read()
 
         # Load the image
         byteImgIO = io.BytesIO()
         byteImg = Image.open(image)
-        byteImg.save(byteImgIO, "PNG")
+        byteImg.save(byteImgIO, format='PNG')
         byteImgIO.seek(0)
         byteImg = byteImgIO.read()
         dataBytesIO = io.BytesIO(byteImg)
         finalPass = Image.open(dataBytesIO)
+        res = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+        image_path= "./images/" + res + ".png"
+        image.save(image_path) 
         
         # Save the photo for future model testing
-        model_test(blob)
+        model_test(finalPass, image_path)
+        # exit(1)
 
         # Test the photo
         train_photo = data_transform(finalPass)
@@ -179,7 +168,7 @@ def predict():
         print(allClasses[pred_classes])
 
         # Delete the file, we dont want it
-        # os.remove(image_path)
+        os.remove(image_path)
 
         # return render_template("index.html", prediction=allClasses[pred_classes])
         prediction = (allClasses[pred_classes])[0:-1]
